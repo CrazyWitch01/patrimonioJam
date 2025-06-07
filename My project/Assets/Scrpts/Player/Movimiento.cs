@@ -5,7 +5,9 @@ using UnityEngine.InputSystem;
 
 public class Movimiento : MonoBehaviour
 {
-    [SerializeField] float velocidad = 5f;
+    [SerializeField] float velocidad = 14f;
+    [SerializeField] float WalkingVelocidad = 14f;
+
     public Transform Orientation;
     public float PlayerHeight;
     public LayerMask Ground;
@@ -17,6 +19,9 @@ public class Movimiento : MonoBehaviour
     public bool canJump;
     private KeyCode jumpKey = KeyCode.Space;
 
+    public float dashSpeed;
+    public MovementState state;
+
 
     float horizontalInput;
     float verticalInput;
@@ -25,7 +30,28 @@ public class Movimiento : MonoBehaviour
 
     Rigidbody rb;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public enum MovementState
+    {
+        dashing,
+        walking
+    }
+
+    public bool dashing;
+
+
+    private void StateHandler()
+    {
+        if (dashing)
+        {
+            state = MovementState.dashing;
+            velocidad = dashSpeed;
+        }
+        else if (grounded)
+        {
+            state = MovementState.walking;
+            velocidad = WalkingVelocidad;
+        }
+    }
     void Start()
     {
         canJump = true;
@@ -55,6 +81,7 @@ public class Movimiento : MonoBehaviour
         grounded = Physics.Raycast(rayOrigin, Vector3.down, rayLength, Ground);
         InputFunc();
         SpeedControl();
+        StateHandler();
 
         if (grounded)
         {
