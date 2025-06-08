@@ -10,6 +10,8 @@ public class EnemyAI : MonoBehaviour
     public bool IsWalkPointSet;
     public float WalkPointRange;
     public float Health;
+    public float SpeedNormal = 11f;
+
 
     //Ataques
     public float TimeBetweenAttacks;
@@ -20,7 +22,7 @@ public class EnemyAI : MonoBehaviour
     //states
 
     public float sightRange, attackRange;
-    public bool playerInSightRange, playerInAttackRange;
+    public bool playerInSightRange, playerInAttackRange, enemyFreezePos;
 
     private void Awake()
     {
@@ -30,6 +32,7 @@ public class EnemyAI : MonoBehaviour
 
     private void ChasePlayer()
     {
+        enemyFreezePos = false;
         agent.SetDestination(player.position);
     }
     private void AttackPlayer()
@@ -49,6 +52,7 @@ public class EnemyAI : MonoBehaviour
             //xd
             AlreadyAttacked = true;
             Invoke(nameof(ResetAttack), TimeBetweenAttacks);
+            enemyFreezePos = true;
         }
     }
     private void ResetAttack()
@@ -60,6 +64,7 @@ public class EnemyAI : MonoBehaviour
 
     private void Patrolling()
     {
+        enemyFreezePos = false;
         if (!IsWalkPointSet) SearchWalkPoint();
 
         if (IsWalkPointSet)
@@ -96,6 +101,15 @@ public class EnemyAI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (enemyFreezePos)
+        {
+            agent.speed = 0f;
+        }
+        else
+        {
+            agent.speed = SpeedNormal;
+        }
+
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, WhatIsPlayer);
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, WhatIsPlayer);
 
@@ -103,6 +117,11 @@ public class EnemyAI : MonoBehaviour
         if (playerInSightRange && !playerInAttackRange) ChasePlayer();
         if (playerInAttackRange && playerInSightRange) AttackPlayer();
 
+    }
+    void LateUpdate()
+    {
+        Vector3 currentEuler = transform.eulerAngles;
+        transform.rotation = Quaternion.Euler(0f, currentEuler.y, currentEuler.z);
     }
 
     public void TakeDamage(int damage)

@@ -137,7 +137,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 06988f940ef24d6498db17e994b8063f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2.16
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 06988f940ef24d6498db17e994b8063f, type: 3}
       propertyPath: m_LocalRotation.w
@@ -660,7 +660,7 @@ MonoBehaviour:
   m_Shape:
     rid: 6961375503958147181
   m_ShapeRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_UnmodifiedMeshVersion: 777
+  m_UnmodifiedMeshVersion: 847
   m_Size: {x: 20, y: 17, z: 35}
   m_LocalCenter: {x: 0, y: 0, z: 0}
   references:
@@ -7123,7 +7123,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 2015615736}
-  m_VersionIndex: 777
+  m_VersionIndex: 847
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -9304,7 +9304,7 @@ CapsuleCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
@@ -9427,7 +9427,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
@@ -9455,13 +9455,15 @@ MonoBehaviour:
   IsWalkPointSet: 0
   WalkPointRange: 5
   Health: 10
-  TimeBetweenAttacks: 0.5
+  SpeedNormal: 11
+  TimeBetweenAttacks: 1
   AlreadyAttacked: 0
   projectile: {fileID: 2356002944357173848, guid: 5f634f6ad36bcc24caadd246e2791a0e, type: 3}
-  sightRange: 30
-  attackRange: 12
+  sightRange: 40
+  attackRange: 20
   playerInSightRange: 0
   playerInAttackRange: 0
+  enemyFreezePos: 0
 --- !u!1 &1714195228
 GameObject:
   m_ObjectHideFlags: 0
