@@ -24,7 +24,7 @@ public class EnemyAI : MonoBehaviour
 
     private void Awake()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        player = GameObject.Find("PlayerObj").transform;
         agent = GetComponent<NavMeshAgent>();
     }
 
@@ -125,6 +125,6 @@ public class EnemyAI : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position,attackRange);
         Gizmos.color = Color.yellow;
-        Gizmos.DrawSphere(transform.position,sightRange);
+        Gizmos.DrawWireSphere(transform.position,sightRange);
     }
 }
