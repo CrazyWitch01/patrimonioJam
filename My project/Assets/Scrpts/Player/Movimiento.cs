@@ -2,11 +2,18 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-
 public class Movimiento : MonoBehaviour
 {
     [SerializeField] float velocidad = 14f;
     [SerializeField] float WalkingVelocidad = 14f;
+    [SerializeField] GameObject AgujaArma;
+    [SerializeField] GameObject Agujaespalda;
+
+
+    bool ArmaAtaque = false;
+    bool puedeAtacar = true;
+    bool estabaAtacando = false;
+    Animator animator;
 
     public Transform Orientation;
     public float PlayerHeight;
@@ -21,7 +28,6 @@ public class Movimiento : MonoBehaviour
 
     public float dashSpeed;
     public MovementState state;
-
 
     float horizontalInput;
     float verticalInput;
@@ -38,7 +44,6 @@ public class Movimiento : MonoBehaviour
 
     public bool dashing;
 
-
     private void StateHandler()
     {
         if (dashing)
@@ -52,17 +57,19 @@ public class Movimiento : MonoBehaviour
             velocidad = WalkingVelocidad;
         }
     }
+
     void Start()
     {
         canJump = true;
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+        animator = GetComponentInChildren<Animator>();
     }
 
     public void IsAttack()
     {
         GetComponentInChildren<Animator>().SetTrigger("IsAttack");
-
+        puedeAtacar = false;
     }
 
     private void InputFunc()
@@ -70,7 +77,7 @@ public class Movimiento : MonoBehaviour
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
-        if(Input.GetKey(jumpKey) && canJump && grounded )
+        if (Input.GetKey(jumpKey) && canJump && grounded)
         {
             canJump = false;
             Jump();
@@ -78,7 +85,6 @@ public class Movimiento : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
         Vector3 rayOrigin = transform.position + Vector3.up * 1f;
@@ -97,22 +103,43 @@ public class Movimiento : MonoBehaviour
         {
             rb.linearDamping = 0;
         }
+
         bool isRunning = (horizontalInput != 0 || verticalInput != 0) && grounded;
-        GetComponentInChildren<Animator>().SetBool("IsRunning", isRunning);
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        animator.SetBool("IsRunning", isRunning);
+
+        if (Input.GetKeyDown(KeyCode.Mouse0) && puedeAtacar)
         {
             IsAttack();
         }
 
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        bool estaAtacando = stateInfo.IsName("golpear");
+
+        if (estaAtacando && !estabaAtacando)
+        {
+            AgujaArma.SetActive(true);
+            Agujaespalda.SetActive(false);
+            ArmaAtaque = true;
+            estabaAtacando = true;
+        }
+        else if (!estaAtacando && estabaAtacando)
+        {
+            AgujaArma.SetActive(false);
+            ArmaAtaque = false;
+            puedeAtacar = true;
+            estabaAtacando = false;
+            Agujaespalda.SetActive(true);
+        }
     }
 
     private void FixedUpdate()
     {
         MovePlayer();
     }
+
     private void MovePlayer()
     {
-        moveDirection = Orientation.forward*verticalInput + Orientation.right*horizontalInput;
+        moveDirection = Orientation.forward * verticalInput + Orientation.right * horizontalInput;
 
         if (grounded)
         {
@@ -123,28 +150,27 @@ public class Movimiento : MonoBehaviour
             rb.AddForce(moveDirection.normalized * velocidad * 10f * airMultiplier, ForceMode.Force);
         }
     }
-    
+
     private void SpeedControl()
     {
-        Vector3 flatVel = new Vector3(rb.linearVelocity.x,0f,rb.linearVelocity.z);
-        if(flatVel.magnitude>velocidad)
+        Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+        if (flatVel.magnitude > velocidad)
         {
             Vector3 limitedvel = flatVel.normalized * velocidad;
             rb.linearVelocity = new Vector3(limitedvel.x, rb.linearVelocity.y, limitedvel.z);
         }
     }
+
     private void Jump()
     {
-        rb.linearVelocity = new Vector3(rb.linearVelocity.x,0,rb.linearVelocity.z);
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
-        GetComponentInChildren<Animator>().SetBool("IsJumping", true);
-
+        animator.SetBool("IsJumping", true);
     }
 
     private void ResetJump()
     {
         canJump = true;
-        GetComponentInChildren<Animator>().SetBool("IsJumping", false);
-
+        animator.SetBool("IsJumping", false);
     }
 }
