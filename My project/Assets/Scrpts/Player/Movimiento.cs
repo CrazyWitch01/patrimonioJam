@@ -59,6 +59,12 @@ public class Movimiento : MonoBehaviour
         rb.freezeRotation = true;
     }
 
+    public void IsAttack()
+    {
+        GetComponentInChildren<Animator>().SetTrigger("IsAttack");
+
+    }
+
     private void InputFunc()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
@@ -91,6 +97,13 @@ public class Movimiento : MonoBehaviour
         {
             rb.linearDamping = 0;
         }
+        bool isRunning = (horizontalInput != 0 || verticalInput != 0) && grounded;
+        GetComponentInChildren<Animator>().SetBool("IsRunning", isRunning);
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            IsAttack();
+        }
+
     }
 
     private void FixedUpdate()
@@ -124,10 +137,14 @@ public class Movimiento : MonoBehaviour
     {
         rb.linearVelocity = new Vector3(rb.linearVelocity.x,0,rb.linearVelocity.z);
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+        GetComponentInChildren<Animator>().SetBool("IsJumping", true);
+
     }
 
     private void ResetJump()
     {
         canJump = true;
+        GetComponentInChildren<Animator>().SetBool("IsJumping", false);
+
     }
 }
