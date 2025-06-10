@@ -1,4 +1,5 @@
 using UnityEngine;
+using Unity.Cinemachine;
 
 public class ThirdPer : MonoBehaviour
 {
@@ -9,12 +10,26 @@ public class ThirdPer : MonoBehaviour
 
     public float rotSpeed;
 
-    // Update is called once per frame
+    //Cosas a Desactivar el puntero este activo xd
+
+    public CinemachineCamera Camara;
+    private CinemachineOrbitalFollow OrbFollow;
+    private Movimiento Movimiento;
+    private Dash Dash;
+    private Animator playerAnimator;
+    private Quaternion playerSavedRotation;
+
+    private bool IdlePlay = false;
 
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        Movimiento = player.GetComponent<Movimiento>();
+        Dash = player.GetComponent<Dash>();
+        OrbFollow = Camara.GetComponent<CinemachineOrbitalFollow>();
+        playerAnimator = playerObj.GetComponent<Animator>();
+
     }
     void Update()
     {
@@ -29,5 +44,42 @@ public class ThirdPer : MonoBehaviour
         {
             playerObj.forward = Vector3.Slerp(playerObj.forward, inputDir.normalized, Time.deltaTime * rotSpeed);
         }
+        GameObject CURSORUNLOCKER = GameObject.FindGameObjectWithTag("CURSORUNLOCKER");
+
+        if (CURSORUNLOCKER !=null && CURSORUNLOCKER.activeInHierarchy)
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+            Movimiento.enabled = false;
+            Dash.enabled = false;
+            OrbFollow.enabled = false;
+            playerObj.rotation = playerSavedRotation;
+
+        }
+
+        else
+        {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            Movimiento.enabled = true;
+            Dash.enabled = true;
+            OrbFollow.enabled = true;
+            playerSavedRotation = playerObj.rotation;
+            
+
+        }
+
     }
+
+    public void OnTriggerEnter(Collider other)
+    {
+        if (playerObj.CompareTag("ConversationTrigger"))
+        {
+            playerAnimator.Play("idle");
+            playerAnimator.SetBool("isRunning", false);
+            playerAnimator.SetTrigger("IdleTrigger");            //si esto no Funciona me meto un pepazo
+
+        }
+    }
+
 }

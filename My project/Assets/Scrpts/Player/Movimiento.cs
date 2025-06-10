@@ -85,7 +85,7 @@ public class Movimiento : MonoBehaviour
         }
     }
 
-    void Update()
+    public void Update()
     {
         Vector3 rayOrigin = transform.position + Vector3.up * 1f;
         float rayLength = PlayerHeight * 0.5f + 0.2f;
