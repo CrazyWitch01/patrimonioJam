@@ -7,6 +7,7 @@ TagManager:
   - ConversationStarter
   - CURSORUNLOCKER
   - ConversationTrigger
+  - Aguja
   layers:
   - Default
   - TransparentFX

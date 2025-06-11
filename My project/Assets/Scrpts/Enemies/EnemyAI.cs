@@ -17,6 +17,7 @@ public class EnemyAI : MonoBehaviour
     public float TimeBetweenAttacks;
     public bool AlreadyAttacked;
     public GameObject projectile;
+    public bool PuedeAtacar = true;
 
 
     //states
@@ -24,10 +25,21 @@ public class EnemyAI : MonoBehaviour
     public float sightRange, attackRange;
     public bool playerInSightRange, playerInAttackRange, enemyFreezePos;
 
+    //animaciones
+
+    private Animator animaciones;
+
+    //hurtbox
+    public GameObject Hurtbox;
+    private BoxCollider hurtboxCollider;
+
     private void Awake()
     {
         player = GameObject.Find("PlayerObj").transform;
         agent = GetComponent<NavMeshAgent>();
+        animaciones = GetComponentInChildren<Animator>();
+        hurtboxCollider = Hurtbox.GetComponent<BoxCollider>();
+        hurtboxCollider.isTrigger = true;
     }
 
     private void ChasePlayer()
@@ -37,7 +49,15 @@ public class EnemyAI : MonoBehaviour
     }
     private void AttackPlayer()
     {
+        if (!PuedeAtacar)
+        {
+            Debug.Log("NoPuedeAtacar");
+            animaciones.SetBool("IsAttacking", false);
+            return;
+        }
         agent.SetDestination(transform.position);
+        animaciones.SetBool("IsAttacking", true);
+        animaciones.SetBool("IsRunning", false);
 
         transform.LookAt(player);
 
@@ -93,10 +113,6 @@ public class EnemyAI : MonoBehaviour
             IsWalkPointSet = true;
         }
     }
-    void Start()
-    {
-        
-    }
 
     // Update is called once per frame
     void Update()
@@ -113,9 +129,24 @@ public class EnemyAI : MonoBehaviour
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, WhatIsPlayer);
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, WhatIsPlayer);
 
-        if (!playerInSightRange && !playerInAttackRange) Patrolling();
-        if (playerInSightRange && !playerInAttackRange) ChasePlayer();
-        if (playerInAttackRange && playerInSightRange) AttackPlayer();
+        if (!playerInSightRange && !playerInAttackRange)
+        {
+            Patrolling();
+            animaciones.SetBool("IsRunning", false);
+        }
+        if (playerInSightRange && !playerInAttackRange)
+        {
+            ChasePlayer();
+            animaciones.SetBool("IsRunning", true);
+        }
+        if (playerInAttackRange && playerInSightRange && PuedeAtacar)
+        {
+            AttackPlayer();
+        }
+        else
+        {
+            animaciones.SetBool("IsAttacking", false);
+        }
 
     }
     void LateUpdate()
@@ -127,12 +158,18 @@ public class EnemyAI : MonoBehaviour
     public void TakeDamage(int damage)
     {
         Health -= damage;
+        animaciones.SetTrigger("IsHit");
+        PuedeAtacar = false;
+        Invoke(nameof(EnableAttack), 2f);
+        
 
         if (Health <= 0)
         {
-            Invoke(nameof(DestroyEnemies),.5f);
+            animaciones.SetBool("IsDead",true);
+            Invoke(nameof(DestroyEnemies),2f);
         }
     }
+
 
     private void DestroyEnemies()
     {
@@ -145,5 +182,10 @@ public class EnemyAI : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position,attackRange);
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position,sightRange);
+    }
+
+    private void EnableAttack()
+    {
+        PuedeAtacar=true;
     }
 }
