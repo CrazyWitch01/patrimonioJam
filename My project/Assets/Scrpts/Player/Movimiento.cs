@@ -36,6 +36,10 @@ public class Movimiento : MonoBehaviour
 
     Rigidbody rb;
 
+    private Collider Coli;
+    private PhysicsMaterial friccion;
+
+
     public enum MovementState
     {
         dashing,
@@ -64,6 +68,8 @@ public class Movimiento : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         animator = GetComponentInChildren<Animator>();
+        Coli = GetComponentInChildren<Collider>();
+        friccion = Coli.material;
     }
 
     public void IsAttack()
@@ -98,10 +104,13 @@ public class Movimiento : MonoBehaviour
         if (grounded)
         {
             rb.linearDamping = groundDrag;
+            friccion.dynamicFriction = 1f;
+
         }
         else
         {
             rb.linearDamping = 0;
+            friccion.dynamicFriction = 0f;
         }
 
         bool isRunning = (horizontalInput != 0 || verticalInput != 0) && grounded;
