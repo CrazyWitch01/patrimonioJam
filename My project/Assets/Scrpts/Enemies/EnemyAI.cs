@@ -67,7 +67,7 @@ public class EnemyAI : MonoBehaviour
             //ataque proyectil
             Rigidbody rb = Instantiate(projectile, transform.position, Quaternion.identity).GetComponent<Rigidbody>();
 
-            rb.AddForce(transform.forward * 32f, ForceMode.Impulse);
+            rb.AddForce(transform.forward * 28f, ForceMode.Impulse);
             rb.AddForce(transform.up * 8f, ForceMode.Impulse);
             //xd
             AlreadyAttacked = true;

@@ -36,9 +36,22 @@ public class Movimiento : MonoBehaviour
 
     Rigidbody rb;
 
+    //Pisadas
+    public AudioClip[] pisadasTierra;
+    public AudioClip[] pisadasPiedra;
+    public AudioSource PisadasAudioSource;
+
+    public float PisadasIntervalo = 0.5f;
+    private float pisadasTimer = 0f;
+
     private Collider Coli;
     private PhysicsMaterial friccion;
 
+    //Voz
+
+    public AudioClip VozSalto;
+    public AudioClip VozAttackDash;
+    public AudioSource VocesAudioSource;
 
     public enum MovementState
     {
@@ -54,6 +67,7 @@ public class Movimiento : MonoBehaviour
         {
             state = MovementState.dashing;
             velocidad = dashSpeed;
+            
         }
         else if (grounded)
         {
@@ -76,6 +90,7 @@ public class Movimiento : MonoBehaviour
     {
         GetComponentInChildren<Animator>().SetTrigger("IsAttack");
         puedeAtacar = false;
+        VocesAudioSource.PlayOneShot(VozAttackDash);
     }
 
     private void InputFunc()
@@ -115,6 +130,20 @@ public class Movimiento : MonoBehaviour
 
         bool isRunning = (horizontalInput != 0 || verticalInput != 0) && grounded;
         animator.SetBool("IsRunning", isRunning);
+
+        if (isRunning)
+        {
+            pisadasTimer -= Time.deltaTime;
+            if (pisadasTimer < 0f)
+            {
+                PasosSonido();
+                pisadasTimer = PisadasIntervalo;
+            }
+        }
+        else
+        {
+            pisadasTimer = 0f;
+        }
 
         if (Input.GetKeyDown(KeyCode.Mouse0) && puedeAtacar)
         {
@@ -175,11 +204,48 @@ public class Movimiento : MonoBehaviour
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
         animator.SetBool("IsJumping", true);
+        VocesAudioSource.PlayOneShot(VozSalto);
+
     }
 
     private void ResetJump()
     {
         canJump = true;
         animator.SetBool("IsJumping", false);
+    }
+
+    public string TagPasos()
+    {
+        Vector3 inicio = transform.position + Vector3.up * 0.5f;
+        RaycastHit Pasoshit;
+        if (Physics.Raycast(inicio,Vector3.down, out Pasoshit, 2f))
+        {
+            return Pasoshit.collider.tag;
+        }
+        return "Default";
+
+    }
+
+    public void PasosSonido()
+    {
+        string tagsuelo = TagPasos();
+        AudioClip[] clips = null;
+
+        if (tagsuelo == "Tierra")
+        {
+            clips = pisadasTierra;
+        }
+
+        else if (tagsuelo == "Piedra")
+        {
+            clips = pisadasPiedra;
+        }
+
+        if (clips != null && clips.Length > 0)
+        {
+            int index = Random.Range(0, clips.Length);
+            PisadasAudioSource.PlayOneShot(clips[index]);
+        }
+
     }
 }

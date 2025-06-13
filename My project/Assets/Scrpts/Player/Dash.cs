@@ -14,6 +14,8 @@ public class Dash : MonoBehaviour
 
     public float dashCD;
     private float dashCDTimer;
+    public AudioSource VoiceAudioSource;
+    public AudioClip DashClip;
 
     private KeyCode dashKey = KeyCode.LeftShift;
     void Start()
@@ -46,6 +48,8 @@ public class Dash : MonoBehaviour
         delayedForceToApply = forceToApply;
         Invoke(nameof(DelayedDashForce), 0.025f);
         Invoke(nameof(ResetDashing), dashDuration);
+        VoiceAudioSource.PlayOneShot(DashClip);
+
     }
 
     private Vector3 delayedForceToApply;

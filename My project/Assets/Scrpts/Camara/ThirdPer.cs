@@ -3,6 +3,7 @@ using Unity.Cinemachine;
 
 public class ThirdPer : MonoBehaviour
 {
+    public bool GameActive = true;
     public Transform orientation;
     public Transform player;
     public Transform playerObj;
@@ -33,6 +34,11 @@ public class ThirdPer : MonoBehaviour
     }
     void Update()
     {
+        if (!GameActive)
+        {
+            return;
+        }
+
         Vector3 viewDir = player.position - new Vector3(transform.position.x, player.position.y, transform.position.z);
         orientation.forward = viewDir.normalized;
 
@@ -44,6 +50,17 @@ public class ThirdPer : MonoBehaviour
         {
             playerObj.forward = Vector3.Slerp(playerObj.forward, inputDir.normalized, Time.deltaTime * rotSpeed);
         }
+
+        if (!GameActive)
+        {
+            Cursor.visible=false;
+            Cursor.lockState=CursorLockMode.Locked;
+            Movimiento.enabled = false;
+            Dash.enabled = false;
+            OrbFollow.enabled = false;
+            return;
+        }
+
         GameObject CURSORUNLOCKER = GameObject.FindGameObjectWithTag("CURSORUNLOCKER");
 
         if (CURSORUNLOCKER !=null && CURSORUNLOCKER.activeInHierarchy)

@@ -16,4 +16,15 @@ public class BulletsDespawn : MonoBehaviour
     {
         
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.layer == LayerMask.NameToLayer("ground"))
+        {
+            Destroy(gameObject);
+        }
+        if (other.CompareTag("PLAYERHURTBOX"))
+        {
+            Destroy(gameObject);
+        }
+    }
 }

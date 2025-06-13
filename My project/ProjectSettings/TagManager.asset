@@ -8,6 +8,10 @@ TagManager:
   - CURSORUNLOCKER
   - ConversationTrigger
   - Aguja
+  - Tierra
+  - Piedra
+  - Bullet
+  - PLAYERHURTBOX
   layers:
   - Default
   - TransparentFX
