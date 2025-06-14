@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
+
 
 public class VidaPlayer : MonoBehaviour
 {
@@ -28,6 +31,11 @@ public class VidaPlayer : MonoBehaviour
     private bool Inmunidad2 = false;
     public float TimeInmunidad2 = 0.2f;
 
+    //Camara
+    public Volume VolumenCamara;
+    private Vignette Vignette;
+    public float CamaraTransicion = 1f;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -35,6 +43,9 @@ public class VidaPlayer : MonoBehaviour
         VidaUI();
         Movimiento = Player.GetComponent<Movimiento>();
         Dash = Player.GetComponent<Dash>();
+        VolumenCamara.profile.TryGet(out Vignette vignette);
+        Vignette = vignette;
+        Vignette.intensity.value = 0f;
     }
 
     // Update is called once per frame
@@ -111,6 +122,7 @@ public class VidaPlayer : MonoBehaviour
             Camara.GameActive = false;
         }
 
+        StartCoroutine(TranscicionVignette(0f,1f));
         StartCoroutine(Respawn());
     }
     IEnumerator RegenHealth()
@@ -142,6 +154,19 @@ public class VidaPlayer : MonoBehaviour
         Camara.GameActive = true;
 
         ISDEAD = false;
+        StartCoroutine(TranscicionVignette(1f, 0f));
 
+    }
+
+    IEnumerator TranscicionVignette( float start, float end)
+    {
+        float t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime * CamaraTransicion;
+            float value = Mathf.Lerp(start, end, t);
+            Vignette.intensity.value = value;
+            yield return null;
+        }
     }
 }
