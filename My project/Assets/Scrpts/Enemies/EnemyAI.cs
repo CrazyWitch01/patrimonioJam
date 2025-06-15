@@ -33,8 +33,15 @@ public class EnemyAI : MonoBehaviour
     public GameObject Hurtbox;
     private BoxCollider hurtboxCollider;
 
+    //Audio
+    AudioSource AudioSourceEnemigo;
+    [SerializeField] AudioClip[] AudioAtaques;
+    [SerializeField] AudioClip[] AudioHit;
+    [SerializeField] AudioClip AudioMuerte;
+
     private void Awake()
     {
+        AudioSourceEnemigo = GetComponent<AudioSource>();
         player = GameObject.Find("PlayerObj").transform;
         agent = GetComponent<NavMeshAgent>();
         animaciones = GetComponentInChildren<Animator>();
@@ -63,6 +70,9 @@ public class EnemyAI : MonoBehaviour
 
         if (!AlreadyAttacked)
         {
+            AudioClip clipAtaque = AudioAtaques[Random.Range(0, AudioAtaques.Length)];
+            AudioSourceEnemigo.PlayOneShot(clipAtaque);
+
 
             //ataque proyectil
             Rigidbody rb = Instantiate(projectile, transform.position, Quaternion.identity).GetComponent<Rigidbody>();
@@ -161,11 +171,14 @@ public class EnemyAI : MonoBehaviour
         animaciones.SetTrigger("IsHit");
         PuedeAtacar = false;
         Invoke(nameof(EnableAttack), 2f);
+        AudioClip clipHit = AudioHit[Random.Range(0, AudioHit.Length)];
+        AudioSourceEnemigo.PlayOneShot(clipHit);
         
 
         if (Health <= 0)
         {
             animaciones.SetBool("IsDead",true);
+            AudioSourceEnemigo.PlayOneShot(AudioMuerte);
             Invoke(nameof(DestroyEnemies),2f);
         }
     }

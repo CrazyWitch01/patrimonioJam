@@ -48,10 +48,11 @@ public class Movimiento : MonoBehaviour
 
     //Voz
 
-    public AudioClip VozSalto;
-    public AudioClip VozAttackDash;
+    public AudioClip[] VozSalto;
+    public AudioClip[] VozAttackDash;
     public AudioSource VocesAudioSource;
 
+    
     public enum MovementState
     {
         dashing,
@@ -89,7 +90,8 @@ public class Movimiento : MonoBehaviour
     {
         GetComponentInChildren<Animator>().SetTrigger("IsAttack");
         puedeAtacar = false;
-        VocesAudioSource.PlayOneShot(VozAttackDash);
+        int index = Random.Range(0, VozAttackDash.Length);
+        VocesAudioSource.PlayOneShot(VozAttackDash[index]);
     }
 
     private void InputFunc()
@@ -203,7 +205,8 @@ public class Movimiento : MonoBehaviour
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
         animator.SetBool("IsJumping", true);
-        VocesAudioSource.PlayOneShot(VozSalto);
+        int index = Random.Range(0, VozSalto.Length);
+        VocesAudioSource.PlayOneShot(VozSalto[index]); ;
 
     }
 

@@ -35,6 +35,10 @@ public class VidaPlayer : MonoBehaviour
     public Volume VolumenCamara;
     private Vignette Vignette;
     public float CamaraTransicion = 1f;
+    public AudioSource VocesAudioSource;
+
+    public AudioClip[] VozHit;
+    public AudioClip VozMuerte;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -79,6 +83,11 @@ public class VidaPlayer : MonoBehaviour
         VidaActual = Mathf.Clamp(VidaActual,0,MaxSalud);
         Inmunidad = Time.time;
         Regen = false;
+        if (VidaActual > 0)
+        {
+            AudioClip Clipdaño = VozHit[Random.Range(0, VozHit.Length)];
+            VocesAudioSource.PlayOneShot(Clipdaño);
+        }
 
 
         VidaUI();
@@ -86,6 +95,7 @@ public class VidaPlayer : MonoBehaviour
         if (VidaActual <= 0)
         {
             Muerte();
+            VocesAudioSource.PlayOneShot(VozMuerte);
         }
         else
         {
