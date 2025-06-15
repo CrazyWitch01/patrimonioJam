@@ -20,7 +20,7 @@ public class ThirdPer : MonoBehaviour
     private Animator playerAnimator;
     private Quaternion playerSavedRotation;
 
-    private bool IdlePlay = false;
+    //private bool IdlePlay = false;
 
     private void Start()
     {
