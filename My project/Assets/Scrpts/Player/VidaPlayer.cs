@@ -71,6 +71,11 @@ public class VidaPlayer : MonoBehaviour
         {
             TakeDamage(1);
         }
+
+        if (other.CompareTag("PLAYERRESPAWNER"))
+        {
+            Spawner = other.transform;
+        }
     }
     public void TakeDamage(int amount)
     {
