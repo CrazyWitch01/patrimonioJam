@@ -32,12 +32,17 @@ public class EnemyAI : MonoBehaviour
     //hurtbox
     public GameObject Hurtbox;
     private BoxCollider hurtboxCollider;
+    public bool canBeDamaged = true;
 
     //Audio
     AudioSource AudioSourceEnemigo;
     [SerializeField] AudioClip[] AudioAtaques;
     [SerializeField] AudioClip[] AudioHit;
     [SerializeField] AudioClip AudioMuerte;
+
+    //particulas
+    public ParticleSystem PartHit;
+    public ParticleSystem PartMuerte;
 
     private void Awake()
     {
@@ -103,7 +108,6 @@ public class EnemyAI : MonoBehaviour
         }
         Vector3 distanceToWalkPoint = transform.position - WalkPoint;
 
-        //walkpoint reached
 
         if (distanceToWalkPoint.magnitude < 1f)
         {
@@ -167,19 +171,32 @@ public class EnemyAI : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        if (!canBeDamaged)
+        {
+            return; 
+        }
+        canBeDamaged = false;
+        Invoke(nameof(CanBeDamaged), 1f);
         Health -= damage;
         animaciones.SetTrigger("IsHit");
         PuedeAtacar = false;
         Invoke(nameof(EnableAttack), 2f);
-        AudioClip clipHit = AudioHit[Random.Range(0, AudioHit.Length)];
-        AudioSourceEnemigo.PlayOneShot(clipHit);
-        
+        if (Health > 0)
+        {
+            AudioClip clipHit = AudioHit[Random.Range(0, AudioHit.Length)];
+            AudioSourceEnemigo.PlayOneShot(clipHit);
+            PartHit.Play();
+            Destroy(PartHit.gameObject, 3f);
+        }
 
         if (Health <= 0)
         {
+            canBeDamaged = false;
             animaciones.SetBool("IsDead",true);
             AudioSourceEnemigo.PlayOneShot(AudioMuerte);
             Invoke(nameof(DestroyEnemies),2f);
+            PartMuerte.Play();
+            Destroy(PartMuerte.gameObject, 2f);
         }
     }
 
@@ -200,5 +217,9 @@ public class EnemyAI : MonoBehaviour
     private void EnableAttack()
     {
         PuedeAtacar=true;
+    }
+    private void CanBeDamaged()
+    {
+        canBeDamaged =true;
     }
 }

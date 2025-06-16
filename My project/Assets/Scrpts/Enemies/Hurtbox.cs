@@ -8,7 +8,7 @@ public class Hurtbox : MonoBehaviour
     {
         if (other.CompareTag("Aguja"))
         {
-            EnemyAI.TakeDamage(1); // El enemigo recibe daño
+            EnemyAI.TakeDamage(1);
         }
     }
 
